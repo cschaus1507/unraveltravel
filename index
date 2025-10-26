@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unravel Travel • Stress Relief App</title>
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 20% 20%, #cfe6ff 0%, #ffffff 40%, #ffe9d2 80%);
+      --card-bg: rgba(255,255,255,0.8);
+      --border-radius-lg: 1rem;
+      --border-radius-sm: .5rem;
+      --text-dark: #2b2b33;
+      --accent: #5b4bff;
+      --accent-soft: rgba(91,75,255,0.08);
+      --border: rgba(0,0,0,0.08);
+      --shadow-card: 0 20px 40px rgba(0,0,0,.08);
+      --shadow-fab: 0 10px 20px rgba(0,0,0,.15);
+      --danger:#ff4b4b;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100dvh;
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      max-width: 500px;
+      padding: 1rem 1.25rem 0.5rem;
+    }
+
+    .app-header-card {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius-lg);
+      padding: 1rem 1rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .brand-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap:.5rem;
+    }
+
+    .brand-pill {
+      font-size: .65rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+      padding: .25rem .5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(91,75,255,0.2);
+    }
+
+    .brand-tagline {
+      font-size: .8rem;
+      color:#555;
+      font-weight:500;
+    }
+
+    .cta-social {
+      font-size: .7rem;
+      color:#777;
+      text-align:right;
+      line-height:1.2;
+    }
+    .cta-social span{
+      font-weight:600;
+      color:#333;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 500px;
+      padding: .5rem 1.25rem 5.5rem; /* leave space for bottom nav */
+      display: flex;
+    }
+
+    /* Cards / Panels */
+    .panel {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .panel.active {
+      display: flex;
+    }
+
+    .card {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius-lg);
+      padding: 1rem 1rem 1.25rem;
+    }
+
+    .card-header {
+      font-size: .8rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color:#666;
+      margin-bottom:.5rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:.5rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight:600;
+      color: var(--text-dark);
+      margin-bottom:.25rem;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      flex-wrap:wrap;
+    }
+
+    .hint {
+      font-size:.8rem;
+      color:#555;
+      line-height:1.4;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: var(--border-radius-sm);
+      font-size: .9rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: white;
+      padding: .6rem .8rem;
+      line-height:1.1;
+      box-shadow: var(--shadow-fab);
+    }
+    button:active {
+      transform:scale(.98);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      box-shadow:none;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    /* Mindfulness prompt box */
+    .mindfulness-prompt-box {
+      border-radius: var(--border-radius-sm);
+      border: 2px dashed rgba(0,0,0,.1);
+      background: white;
+      padding: 1rem;
+      min-height: 90px;
+      font-size: 1rem;
+      line-height:1.4;
+      font-weight:500;
+      color:#333;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+
+    /* Breathing circle */
+    .breathing-wrapper{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:1rem;
+    }
+
+    .circle-wrapper{
+      position:relative;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0%, #d9d2ff 70%, #a8a0ff 100%);
+      border: 3px solid rgba(91,75,255,.4);
+      box-shadow:0 30px 60px rgba(91,75,255,.4);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: all 2s ease;
+    }
+    .circle-text{
+      text-align:center;
+      font-size:1rem;
+      font-weight:600;
+      color:#2b2b33;
+      line-height:1.3;
+    }
+    .timer-small{
+      font-size:.8rem;
+      color:#555;
+      font-weight:500;
+      margin-top:.25rem;
+    }
+
+    /* Tic Tac Toe */
+    .ttt-board{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:.5rem;
+      max-width:220px;
+      margin:0 auto;
+    }
+    .ttt-cell{
+      background:white;
+      border:2px solid var(--accent);
+      border-radius: var(--border-radius-sm);
+      width:70px;
+      height:70px;
+      font-size:2rem;
+      font-weight:700;
+      color:var(--accent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+    }
+    .ttt-status{
+      text-align:center;
+      font-weight:600;
+      font-size:1rem;
+      color:#333;
+      min-height:1.4em;
+    }
+
+    /* Create Your Game */
+    .game-builder-top{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+      align-items:flex-end;
+    }
+    .game-builder-top label{
+      font-size:.8rem;
+      font-weight:600;
+      color:#444;
+      display:flex;
+      flex-direction:column;
+      line-height:1.2;
+    }
+    .game-builder-top input{
+      border-radius: var(--border-radius-sm);
+      border:1px solid rgba(0,0,0,.2);
+      font-size:.9rem;
+      padding:.5rem .6rem;
+      min-width:6ch;
+    }
+
+    .game-area{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+      min-height:80px;
+      padding:1rem;
+      border-radius: var(--border-radius-sm);
+      background:white;
+      border:2px dashed rgba(0,0,0,.1);
+    }
+
+    .mini-btn{
+      background:var(--accent-soft);
+      color:var(--accent);
+      border:2px solid rgba(91,75,255,.3);
+      box-shadow:none;
+      border-radius: var(--border-radius-sm);
+      font-size:.8rem;
+      padding:.5rem .6rem;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-width:70px;
+      text-align:center;
+      cursor:pointer;
+    }
+    .mini-btn .pts{
+      font-size:.7rem;
+      font-weight:500;
+      color:#333;
+    }
+
+    .score-line{
+      font-size:.9rem;
+      font-weight:600;
+      color:#333;
+    }
+
+    /* Bottom nav */
+    nav.bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      padding: .75rem 1rem 1rem;
+      background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+      pointer-events:none;
+    }
+
+    .nav-inner {
+      background:white;
+      border:1px solid var(--border);
+      border-radius:999px;
+      box-shadow: var(--shadow-fab);
+      display:flex;
+      gap:.5rem;
+      padding:.5rem;
+      pointer-events:auto;
+    }
+
+    .tab-btn{
+      background:none;
+      border:0;
+      border-radius:999px;
+      padding:.6rem .9rem;
+      font-size:.8rem;
+      font-weight:600;
+      color:#444;
+      line-height:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-width:4.5rem;
+    }
+
+    .tab-btn.active{
+      background:var(--accent);
+      color:white;
+      box-shadow: var(--shadow-fab);
+    }
+
+    .tab-label{
+      font-size:.7rem;
+      font-weight:600;
+      margin-top:.25rem;
+      line-height:1;
+    }
+
+    .tiny{
+      font-size:.6rem;
+      opacity:.9;
+      line-height:1.2;
+    }
+
+    /* Utility helpers */
+    .flex-between{display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;gap:.5rem;}
+    .center{text-align:center;}
+    .mt-sm{margin-top:.5rem;}
+    .mt-md{margin-top:1rem;}
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="app-header-card">
+      <div class="title-row">
+        <div class="brand-block">
+          <div class="brand-name">
+            <span>Unravel Travel</span>
+            <span class="brand-pill">Mindfulness • Fun</span>
+          </div>
+          <div class="brand-tagline">Safe travels. Breathe. Play. ✈️</div>
+        </div>
+        <div class="cta-social">
+          <div><span>Questions?</span></div>
+          <div>Tell us on X / IG / TikTok</div>
+        </div>
+      </div>
+      <div style="font-size:.7rem;color:#777;line-height:1.4;margin-top:.5rem;">
+        This app helps lower stress while traveling using calm breathing, mindful thoughts,
+        and quick offline multiplayer games. You got this.
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT (tabs) -->
+  <main>
+
+    <!-- Mindfulness Panel -->
+    <section id="panel-mind" class="panel active">
+      <div class="card">
+        <div class="card-header">
+          <span>Mindfulness</span>
+          <button id="newPromptBtn" class="btn-outline">Next Prompt</button>
+        </div>
+        <div class="card-title">
+          Notice the moment you’re in
+        </div>
+        <div class="mindfulness-prompt-box" id="promptBox">
+          Look around and name 3 things you can see that you never noticed before.
+        </div>
+        <div class="hint mt-md">
+          Mindfulness means gently paying attention to right now without judging yourself.
+          Tiny wins count. If your mind wanders, that's normal — just come back.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Why this helps</span>
+        </div>
+        <div class="hint">
+          Travel can feel loud, rushed, or scary. Slowing your breathing and focusing on
+          small, real details signals safety to your nervous system.
+        </div>
+      </div>
+    </section>
+
+    <!-- Breathing Panel -->
+    <section id="panel-breathe" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <span>Guided Breathing</span>
+          <button id="breathToggleBtn">Start</button>
+        </div>
+
+        <div class="breathing-wrapper">
+          <div id="breathingCircle" class="circle-wrapper">
+            <div class="circle-text">
+              <div id="breathingPhase">Get Ready</div>
+              <div class="timer-small"><span id="breathingTimer">-</span>s</div>
+            </div>
+          </div>
+
+          <div class="hint center">
+            Try 4s In • 4s Hold • 4s Out. Follow the circle.  
+            This pattern helps calm your body quickly.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Games Panel -->
+    <section id="panel-games" class="panel">
+
+      <!-- Tic Tac Toe -->
+      <div class="card">
+        <div class="card-header">
+          <span>Multiplayer Game</span>
+          <button id="resetTicTacToe" class="btn-outline">Reset</button>
+        </div>
+
+        <div class="card-title">
+          Tic Tac Toe (2 players, same screen)
+        </div>
+
+        <div class="ttt-status" id="tttStatus">Player X goes first</div>
+
+        <div class="ttt-board mt-md" id="tttBoard">
+          <!-- 9 cells -->
+          <div class="ttt-cell" data-idx="0"></div>
+          <div class="ttt-cell" data-idx="1"></div>
+          <div class="ttt-cell" data-idx="2"></div>
+          <div class="ttt-cell" data-idx="3"></div>
+          <div class="ttt-cell" data-idx="4"></div>
+          <div class="ttt-cell" data-idx="5"></div>
+          <div class="ttt-cell" data-idx="6"></div>
+          <div class="ttt-cell" data-idx="7"></div>
+          <div class="ttt-cell" data-idx="8"></div>
+        </div>
+
+        <div class="hint center mt-md">
+          Offline. No Wi-Fi needed. Winner buys snacks at the gate 😎
+        </div>
+      </div>
+    </section>
+
+    <!-- Create Game Panel -->
+    <section id="panel-build" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <span>Create Your Game</span>
+          <button id="clearCustomGame" class="btn-danger">Clear</button>
+        </div>
+
+        <div class="card-title">
+          Tap Builder
+          <div class="tiny" style="font-weight:500;">
+            Make buttons that give points when tapped.
+          </div>
+        </div>
+
+        <div class="game-builder-top">
+          <label>
+            Button Text
+            <input id="btnTextInput" maxlength="12" placeholder="Jump!" />
+          </label>
+          <label>
+            Points
+            <input id="btnPtsInput" type="number" min="1" max="999" value="5" />
+          </label>
+          <button id="addGameButton">Add Button</button>
+        </div>
+
+        <div class="mt-md score-line">
+          Score: <span id="customScore">0</span> pts
+        </div>
+
+        <div class="game-area mt-md" id="gameArea">
+          <!-- dynamic mini game buttons go here -->
+        </div>
+
+        <div class="hint mt-md">
+          Idea: Challenge a friend. 30 seconds. Highest score wins.  
+          You just designed your own mini-game. 🎮
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-inner">
+      <button class="tab-btn active" data-target="panel-mind">
+        <div>🧘</div>
+        <div class="tab-label">Calm</div>
+      </button>
+      <button class="tab-btn" data-target="panel-breathe">
+        <div>🌬️</div>
+        <div class="tab-label">Breathe</div>
+      </button>
+      <button class="tab-btn" data-target="panel-games">
+        <div>🎲</div>
+        <div class="tab-label">Play</div>
+      </button>
+      <button class="tab-btn" data-target="panel-build">
+        <div>🎨</div>
+        <div class="tab-label">Create</div>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    /*********************
+     * TAB NAVIGATION
+     *********************/
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // switch active button
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // switch panel
+        const targetId = tab.getAttribute('data-target');
+        panels.forEach(p => {
+          if (p.id === targetId) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+      });
+    });
+
+
+    /*********************
+     * MINDFULNESS PROMPTS
+     *********************/
+    const prompts = [
+      "Look around and name 3 things you can see that you never noticed before.",
+      "Breathe in slowly. Ask yourself: what do I need right now? Not later. Right now.",
+      "Press your feet gently into the floor and notice that it’s holding you up.",
+      "List 2 sounds you can hear. Then 2 things you can touch.",
+      "Relax your shoulders. Unclench your jaw. You’re allowed to take up space.",
+      "Imagine handing your stress to future-you. Present-you can breathe.",
+      "Look for something the color blue. Then green. Then red."
+    ];
+
+    const promptBox = document.getElementById('promptBox');
+    const newPromptBtn = document.getElementById('newPromptBtn');
+
+    newPromptBtn.addEventListener('click', () => {
+      const choice = prompts[Math.floor(Math.random() * prompts.length)];
+      promptBox.textContent = choice;
+    });
+
+
+    /*********************
+     * BREATHING COACH
+     *********************/
+    let breathingRunning = false;
+    let breathingStep = 0; // 0=in,1=hold,2=out
+    let breathingTimeLeft = 0;
+    let breathingIntervalId = null;
+
+    const breathingCircle = document.getElementById('breathingCircle');
+    const breathingPhaseEl = document.getElementById('breathingPhase');
+    const breathingTimerEl = document.getElementById('breathingTimer');
+    const breathToggleBtn = document.getElementById('breathToggleBtn');
+
+    function setBreathingVisual(sizePx,bg,shadow,border){
+      breathingCircle.style.width = sizePx+"px";
+      breathingCircle.style.height = sizePx+"px";
+      breathingCircle.style.background = bg;
+      breathingCircle.style.boxShadow = shadow;
+      breathingCircle.style.borderColor = border;
+    }
+
+    function startBreathing(){
+      breathingRunning = true;
+      breathToggleBtn.textContent = "Pause";
+      breathingStep = 0;
+      breathingTimeLeft = 4;
+      updateBreathingUI();
+      breathingIntervalId = setInterval(tickBreathing,1000);
+    }
+
+    function pauseBreathing(){
+      breathingRunning = false;
+      breathToggleBtn.textContent = "Resume";
+      clearInterval(breathingIntervalId);
+      breathingPhaseEl.textContent="Paused";
+      breathingTimerEl.textContent="—";
+    }
+
+    function tickBreathing(){
+      breathingTimeLeft -= 1;
+      if (breathingTimeLeft <= 0){
+        breathingStep = (breathingStep+1)%3;
+        if (breathingStep===0){breathingTimeLeft=4;} // In
+        if (breathingStep===1){breathingTimeLeft=4;} // Hold
+        if (breathingStep===2){breathingTimeLeft=4;} // Out
+      }
+      updateBreathingUI();
+    }
+
+    function updateBreathingUI(){
+      if (!breathingRunning){
+        return;
+      }
+
+      if (breathingStep===0){
+        breathingPhaseEl.textContent="Breathe In";
+        setBreathingVisual(
+          200,
+          "radial-gradient(circle at 30% 30%, #ffffff 0%, #d9d2ff 70%, #a8a0ff 100%)",
+          "0 30px 60px rgba(91,75,255,.4)",
+          "rgba(91,75,255,.4)"
+        );
+      } else if (breathingStep===1){
+        breathingPhaseEl.textContent="Hold";
+        setBreathingVisual(
+          180,
+          "radial-gradient(circle at 30% 30%, #fff7d9 0%, #ffe9a0 70%, #ffd480 100%)",
+          "0 30px 60px rgba(255,200,0,.35)",
+          "rgba(255,200,0,.6)"
+        );
+      } else {
+        breathingPhaseEl.textContent="Breathe Out";
+        setBreathingVisual(
+          150,
+          "radial-gradient(circle at 30% 30%, #ffffff 0%, #d9fff3 70%, #9df5d5 100%)",
+          "0 30px 60px rgba(0,150,120,.3)",
+          "rgba(0,150,120,.5)"
+        );
+      }
+
+      breathingTimerEl.textContent = breathingTimeLeft;
+    }
+
+    breathToggleBtn.addEventListener('click', () => {
+      if (!breathingRunning){
+        startBreathing();
+      } else {
+        pauseBreathing();
+      }
+    });
+
+
+    /*********************
+     * TIC TAC TOE
+     *********************/
+    const tttCells = Array.from(document.querySelectorAll('.ttt-cell'));
+    const tttStatus = document.getElementById('tttStatus');
+    const resetTicTacToe = document.getElementById('resetTicTacToe');
+
+    let board = ["","","","","","","","",""];
+    let currentPlayer = "X";
+    let gameOver = false;
+
+    function checkWinner(b){
+      const wins = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      for (let w of wins){
+        const [a,b2,c] = w;
+        if (b[a] && b[a]===b[b2] && b[a]===b[c]){
+          return b[a];
+        }
+      }
+      return b.includes("") ? null : "tie";
+    }
+
+    function renderBoard(){
+      tttCells.forEach((cell,i)=>{
+        cell.textContent = board[i];
+      });
+      const result = checkWinner(board);
+      if (result==="X" || result==="Y"){
+        gameOver=true;
+        tttStatus.textContent = "Player "+result+" wins!";
+      } else if (result==="O"){
+        gameOver=true;
+        tttStatus.textContent = "Player O wins!";
+      } else if (result==="tie"){
+        gameOver=true;
+        tttStatus.textContent = "It's a tie!";
+      } else {
+        tttStatus.textContent = "Player "+currentPlayer+"'s turn";
+      }
+    }
+
+    // minor bug fix: winner check shouldn't assume Y. We'll fix in render after click.
+    function safeRenderBoard(){
+      tttCells.forEach((cell,i)=>{
+        cell.textContent = board[i];
+      });
+      const result = checkWinner(board);
+      if (result==="X"){
+        gameOver=true;
+        tttStatus.textContent = "Player X wins!";
+      } else if (result==="O"){
+        gameOver=true;
+        tttStatus.textContent = "Player O wins!";
+      } else if (result==="tie"){
+        gameOver=true;
+        tttStatus.textContent = "It's a tie!";
+      } else {
+        tttStatus.textContent = "Player "+currentPlayer+"'s turn";
+      }
+    }
+
+    tttCells.forEach(cell=>{
+      cell.addEventListener('click',()=>{
+        const idx = parseInt(cell.getAttribute('data-idx'),10);
+        if (board[idx]!=="" || gameOver) return;
+        board[idx]=currentPlayer;
+        currentPlayer = currentPlayer==="X" ? "O" : "X";
+        safeRenderBoard();
+      });
+    });
+
+    resetTicTacToe.addEventListener('click',()=>{
+      board=["","","","","","","","",""];
+      currentPlayer="X";
+      gameOver=false;
+      safeRenderBoard();
+    });
+
+    // init board status
+    safeRenderBoard();
+
+
+    /*********************
+     * CREATE YOUR GAME
+     *********************/
+    const btnTextInput   = document.getElementById('btnTextInput');
+    const btnPtsInput    = document.getElementById('btnPtsInput');
+    const addGameButton  = document.getElementById('addGameButton');
+    const clearCustomBtn = document.getElementById('clearCustomGame');
+    const gameArea       = document.getElementById('gameArea');
+    const customScoreEl  = document.getElementById('customScore');
+
+    let customScore = 0;
+
+    function updateScoreDisplay(){
+      customScoreEl.textContent = customScore;
+    }
+
+    function makeMiniButton(label, pts){
+      const div = document.createElement('button');
+      div.className = 'mini-btn';
+      div.innerHTML = `
+        <div>${label}</div>
+        <div class="pts">+${pts} pts</div>
+      `;
+      div.addEventListener('click',()=>{
+        customScore += pts;
+        updateScoreDisplay();
+      });
+      return div;
+    }
+
+    addGameButton.addEventListener('click',()=>{
+      let txt = btnTextInput.value.trim() || "Tap!";
+      let p   = parseInt(btnPtsInput.value,10);
+      if (isNaN(p) || p<1) p=1;
+      if (p>999) p=999;
+      const mini = makeMiniButton(txt, p);
+      gameArea.appendChild(mini);
+      // tiny UX reset
+      btnTextInput.value="";
+      btnPtsInput.value="5";
+    });
+
+    clearCustomBtn.addEventListener('click',()=>{
+      gameArea.innerHTML="";
+      customScore=0;
+      updateScoreDisplay();
+    });
+
+    updateScoreDisplay();
+  </script>
+</body>
+</html>
